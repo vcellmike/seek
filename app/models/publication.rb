@@ -160,7 +160,15 @@ class Publication < ActiveRecord::Base
     self.abstract = reference.abstract
     self.journal = reference.journal
     self.pubmed_id = reference.pubmed
-    self.published_date = reference.published_date
+
+    unless reference.published_date.nil? || reference.year.nil?
+      # formate: published_date="6/10 06:00"
+      pub_month = reference.published_date.split('/')[0].try(:to_i)
+      pub_date = reference.published_date.split('/')[1].split(' ')[0].try(:to_i)
+      self.published_date = Date.new(reference.year.try(:to_i),pub_month,pub_date)
+    else
+      self.published_date = nil
+    end
     self.citation = reference.citation
   end
 
